@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collector;
@@ -31,7 +32,7 @@ public class MealsUtil {
         LocalTime startTime = LocalTime.of(7, 0);
         LocalTime endTime = LocalTime.of(12, 0);
 
-        List<MealTo> mealsTo = getFiltered(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY);
+       /* List<MealTo> mealsTo = getFiltered(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY);
         mealsTo.forEach(System.out::println);
 
         System.out.println(getFilteredByCycle(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
@@ -40,7 +41,12 @@ public class MealsUtil {
 //        System.out.println(getFilteredByClosure(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
         System.out.println(getFilteredByExecutor(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
         System.out.println(getFilteredByFlatMap(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
-        System.out.println(getFilteredByCollector(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
+        System.out.println(getFilteredByCollector(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));*/
+
+       List<MealTo> mealsTo = getAll(meals);
+       for (MealTo x : mealsTo) {
+           System.out.println(x.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+       }
     }
 
     public static List<MealTo> getFiltered(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -51,6 +57,18 @@ public class MealsUtil {
                 );
         return meals.stream()
                 .filter(meal -> TimeUtil.isBetween(meal.getTime(), startTime, endTime))
+                .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
+                .collect(Collectors.toList());
+    }
+
+    public static List<MealTo> getAll (List<Meal> meals) {
+        int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
+        Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
+                .collect(
+                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
+//                      Collectors.toMap(Meal::getDate, Meal::getCalories, Integer::sum)
+                );
+        return meals.stream()
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
