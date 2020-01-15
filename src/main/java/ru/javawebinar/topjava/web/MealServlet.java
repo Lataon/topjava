@@ -16,12 +16,11 @@ import java.util.List;
 public class MealServlet extends HttpServlet {
     private static final Logger LOG = LoggerFactory.getLogger(MealServlet.class);
     private MealsData mealsData = new MealsData();
-    private List<MealTo> mealsTo;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         LOG.debug("redirect to meals");
-        mealsTo = MealsUtil.getAll(mealsData.getMeals());
+        List<MealTo> mealsTo = MealsUtil.getAll(mealsData.getMeals());
         req.setAttribute("meals", mealsTo);
         req.getRequestDispatcher("/meals.jsp").forward(req, resp);
     }
