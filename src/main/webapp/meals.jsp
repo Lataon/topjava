@@ -16,8 +16,11 @@
         <td>${m.getDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))}</td>
         <td>${m.getDescription()}</td>
         <td>${m.getCalories()}</td>
+        <td><a href="?action=edit&mealId=<c:out value="${m.getId()}"/>">Update</a></td>
+        <td><a href="?action=delete&mealId=<c:out value="${m.getId()}"/>">Delete</a></td>
     </tr>
 </c:forEach>
 </table>
+<p><a href="?action=insert">Add Meal</a></p>
 </body>
 </html>
