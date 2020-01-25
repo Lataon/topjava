@@ -7,9 +7,10 @@ import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
+import ru.javawebinar.topjava.util.Memory;
 
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,18 +23,10 @@ public class InMemoryMealRepository implements MealRepository {
     private Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
-    public static final List<Meal> MEALS = Arrays.asList(
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
-            new Meal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
-    );
     {
         LOG.debug("initiation meal repository map");
-        MEALS.forEach(m->save(1, m));
-        MEALS.forEach(m->save(2, m));
+        Memory.MEALSFor1.forEach(m->save(1, m));
+        Memory.MEALSFor2.forEach(m->save(2, m));
     }
 
     @Override
@@ -69,9 +62,9 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-     public List<Meal> getBetween(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        LOG.debug("get all between {} and {} for user id {}", startDateTime, endDateTime, userId);
-        return getAllFiltered(userId, meal -> DateTimeUtil.isBetween(meal.getDateTime(), startDateTime, endDateTime));
+     public List<Meal> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime, int userId) {
+        LOG.debug("get all between date {} and {} and between time {} and {} for user id {}", startDate, endDate, startTime, endTime, userId);
+        return getAllFiltered(userId, meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate)&&DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
         }
 
      private List<Meal> getAllFiltered(int userId, Predicate<Meal> filter) {

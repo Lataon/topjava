@@ -9,7 +9,9 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Controller
@@ -47,8 +49,8 @@ public class MealRestController {
         return service.getAll(authUserId());
     }
 
-    public List<Meal> getBetween(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<Meal> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         LOG.debug("get between");
-        return service.getBetween(startDateTime, endDateTime, authUserId());
+        return service.getBetween(startDate, startTime, endDate, endTime, authUserId());
     }
 }
